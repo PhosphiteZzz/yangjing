@@ -1,0 +1,652 @@
+@font: #333;
+@white: #ffffff;
+@theme: #ac8458;
+@blue: #31b4f3;
+@border: #dddddd;
+@border-less: #eeeeee;
+@grey: #999999;
+@statusBlue: #1b8bea;
+@fontBlue: #1b8bea;
+@red: #ec1717;
+@background: #f8f8f8;
+.overflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+body {
+  color: @font;
+  font-weight: 500;
+  .main-width {
+    width: 1200px;
+    margin: 0 auto;
+  }
+  //分页
+  .el-pagination {
+    color: @grey;
+    .el-pager {
+      .number {
+        border: 1px solid #999999;
+        border-right: none;
+        &:nth-last-child(1) {
+          border-right: 1px solid #999999;
+        }
+        &:hover {
+          color: @theme;
+        }
+      }
+      .active {
+        color: @white;
+        background-color: @theme;
+        &:hover {
+          color: @white;
+        }
+      }
+      .btn-quickprev,
+      .btn-quicknext {
+        border-left: 1px solid #999999;
+      }
+    }
+  }
+
+  .el-dialog {
+    display: flex;
+    flex-direction: column;
+    margin: 0 !important;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /*height:600px;*/
+    max-height: calc(100% - 30px);
+    max-width: calc(100% - 30px);
+    border-radius: 4px;
+    .el-dialog__header {
+      border-bottom: 1px solid @border-less;
+    }
+  }
+  .common-box {
+    height: 30px;
+    border-bottom: 1px solid @border;
+    .common-title {
+      display: flex;
+      justify-content: space-between;
+      height: 18px;
+      color: @theme;
+      padding-left: 10px;
+      font-size: 18px;
+      border-left: 3px solid @theme;
+      &-more {
+        color: @grey;
+        font-size: 14px;
+        line-height: 18px;
+        cursor: pointer;
+        a {
+          color: @grey;
+        }
+      }
+    }
+    //tap切换
+    .common-tap {
+      height: 100%;
+      display: flex;
+      justify-content: space-between;
+      font-size: 18px;
+      color: @grey;
+      .tap-box {
+        display: flex;
+        .tap {
+          cursor: pointer;
+          text-align: left;
+          margin-left: 24px;
+          &:nth-of-type(1) {
+            margin-left: 0;
+          }
+        }
+      }
+      .tapActive {
+        color: @theme;
+        border-bottom: 2px solid @theme;
+      }
+    }
+  }
+  .common-item {
+    display: flex;
+    align-items: center;
+    line-height: 45px;
+    height: 45px;
+    border-bottom: 1px dashed @border-less;
+    cursor: pointer;
+    .status {
+      width: 50px;
+      height: 19px;
+      border-radius: 2px;
+      line-height: 19px;
+      text-align: center;
+      font-size: 12px;
+      margin-right: 10px;
+    }
+    //进行中
+    .process {
+      border: 1px solid @statusBlue;
+      color: @fontBlue;
+    }
+    //招标中
+    .bidding {
+      border: 1px solid #1bdeea;
+      color: #1bdeea;
+    }
+    //已结束
+    .ending {
+      border: 1px solid @grey;
+      color: @grey;
+    }
+
+    //谈判公告
+    .type_0 {
+      color: #3219eb;
+    }
+    //磋商公告
+    .type_1 {
+      color: #eb7219;
+    }
+    //询价公告
+    .type_2 {
+      color: @red;
+    }
+    //直采公告
+    .type_3 {
+      color: #ebb719;
+    }
+    //其他公告
+    .type_4 {
+      color: @grey;
+    }
+    .icon {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: @theme;
+      margin-right: 10px;
+    }
+    .title {
+      max-width: 372px;
+      flex: 1;
+      .overflow();
+    }
+    .time {
+      margin-left: 64px;
+      width: 85px;
+      text-align: right;
+      font-size: 14px;
+      font-weight: 500;
+      color: @grey;
+    }
+  }
+
+  //通用btn样式
+  .common-btn-active {
+    height: 54px;
+    background: @theme;
+    border-radius: 4px;
+    line-height: 54px;
+    text-align: center;
+    font-size: 20px;
+    color: @white;
+    cursor: pointer;
+    font-weight: 400;
+  }
+  .common-btn {
+    height: 54px;
+    background: #f4f4f4;
+    border-radius: 4px;
+    line-height: 54px;
+    text-align: center;
+    font-size: 20px;
+    color: @grey;
+    cursor: pointer;
+    font-weight: 400;
+  }
+
+  //交易信息头通用样式
+  .content-title {
+    display: flex;
+    align-items: center;
+    margin-bottom: 19px;
+    .icon {
+      display: inline-block;
+      width: 12px;
+      height: 16px;
+      background: url("~@/assets/icon/yj_icon_dz.png") center center no-repeat;
+      margin-right: 10px;
+    }
+    .title {
+      color: @grey;
+      letter-spacing: 1px;
+      cursor: pointer;
+      a {
+        cursor: pointer;
+        color: @grey;
+      }
+    }
+    .title-current {
+      letter-spacing: 1px;
+      color: @theme;
+      a {
+        cursor: pointer;
+        color: @theme;
+      }
+    }
+    .no-cursor {
+      cursor: text;
+    }
+  }
+  //交易详情列表
+  .content-item {
+    display: flex;
+    align-items: center;
+    height: 54px;
+    line-height: 54px;
+    border-bottom: 1px solid @border-less;
+    cursor: pointer;
+    .icon {
+      width: 8px;
+      height: 8px;
+      margin-right: 10px;
+      background: @theme;
+      border-radius: 50%;
+    }
+    .title {
+      max-width: 750px;
+      flex: 1;
+      .overflow();
+    }
+    .time {
+      margin-right: 28px;
+      width: 85px;
+      text-align: right;
+      font-size: 14px;
+      font-weight: 500;
+      color: @grey;
+    }
+    .n_notice {
+      color: #e6b914;
+    }
+    .n_explanation {
+      color: #188aef;
+    }
+    .n_tender_hit {
+      color: #2fcf63;
+    }
+  }
+
+  //通用个人中心列表样式
+  .content-cont {
+    display: flex;
+    height: 600px;
+    .cont-menu {
+      min-width: 260px;
+      // height: 100%;
+      height: 600px;
+      .menu-top {
+        height: 60px;
+        background: @theme;
+        font-size: 18px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: @white;
+        font-weight: bold;
+        .icon {
+          width: 20px;
+          height: 20px;
+          margin-right: 10px;
+          background: url("~@/assets/icon/yj_icon_bz.png") center center
+            no-repeat;
+        }
+      }
+      .menu-bot {
+        height: calc(~"100% - 60px");
+        overflow-y: auto;
+        background-color: @white;
+        /deep/.el-submenu {
+          .el-submenu__title {
+            height: 58px;
+            line-height: 58px;
+            border-bottom: 1px solid @border-less;
+            span {
+              width: 100%;
+              display: inline-block;
+              text-align: center;
+              font-size: 16px;
+            }
+          }
+        }
+        .el-menu {
+          border: none;
+          .el-menu-item-group {
+            .el-menu-item-group__title {
+              padding: 0;
+            }
+            .el-menu-item {
+              border-bottom: 1px solid @border-less;
+              text-align: center;
+              height: 58px;
+              line-height: 58px;
+              a {
+                display: inline-block;
+                width: 100%;
+                height: 100%;
+              }
+              &:hover {
+                background-color: transparent;
+                color: @theme;
+                a {
+                  color: @theme;
+                }
+              }
+              &:focus {
+                background-color: transparent;
+                color: @theme;
+                a {
+                  color: @theme;
+                }
+              }
+              .active-router {
+                color: @theme;
+                font-weight: bold;
+                a {
+                  color: @theme;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    .cont-list {
+      flex: 1;
+      margin-left: 21px;
+      .list-top {
+        height: 72px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        &-title {
+          padding-left: 10px;
+          border-left: 4px solid @theme;
+          line-height: 18px;
+          font-size: 16px;
+          font-weight: bold;
+          color: #333333;
+        }
+        &-search {
+          display: flex;
+          justify-content: center;
+          /deep/.el-input {
+            .el-input__inner {
+              border-radius: 0;
+              border-top-left-radius: 4px;
+              border-bottom-left-radius: 4px;
+              border-right: 0;
+            }
+          }
+          .icon {
+            display: inline-block;
+            width: 67px;
+            height: 40px;
+            cursor: pointer;
+            border-top-right-radius: 4px;
+            border-bottom-right-radius: 4px;
+            background: @theme url("~@/assets/icon/yj_icon_ssb.png") center
+              center no-repeat;
+          }
+        }
+      }
+      .list-bot {
+        height: calc(~"100% - 72px");
+        display: flex;
+        flex-direction: column;
+        &-title {
+          color: @theme;
+          font-size: 14px;
+          font-weight: bold;
+          padding: 0 28px 0 10px;
+          height: 48px;
+          line-height: 48px;
+          display: flex;
+          justify-content: space-between;
+          background: #fffbf7;
+        }
+        &-list {
+          flex: 1;
+        }
+        &-foot {
+          height: 95px;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+        }
+      }
+    }
+  }
+
+  //详情页内容样式
+  .details-cont{
+    min-height: 600px;
+  }
+
+  // .el-loading-spinner {
+  //   /*这个是自己想设置的 gif 加载动图*/
+  //   background: url("~@/assets/icon/loading.gif") no-repeat;
+  //   background-repeat: no-repeat;
+  //   background-size: 100px 100px;
+  //   height: 100px;
+  //   width: 100%;
+  //   background-position: center;
+  //   /*覆盖 element-ui  默认的 50%    因为此处设置了height:100%,所以不设置的话，会只显示一半，因为被top顶下去了*/
+  //   top: 40%;
+  // }
+  // .el-loading-spinner .circular {
+  //   /*隐藏 之前  element-ui  默认的 loading 动画*/
+
+  //   display: none;
+  // }
+
+  // .el-loading-spinner .el-loading-text {
+  //   /*为了使得文字在loading图下面*/
+  //   margin: 110px 0px;
+  //   color: @theme;
+  // }
+
+  //公众号二维码
+  .account {
+    position: fixed;
+    width: 160px;
+    height: 231px;
+    background: url("~@/assets/icon/yj_bg_pc.png");
+    right: 188px;
+    top: 70%;
+    transform: translateY(-50%);
+    padding-top: 7px;
+    z-index: 1000;
+    .qrCode {
+      width: 143px;
+      background: @white;
+      height: 143px;
+      margin: 0 auto;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+    .qrTitle {
+      font-size: 16px;
+      color: @white;
+      text-align: center;
+      margin-top: 17px;
+    }
+    .close {
+      position: absolute;
+      right: -23px;
+      top: -23px;
+      width: 23px;
+      height: 23px;
+      cursor: pointer;
+      background: url("~@/assets/icon/yj_icon_gb.png") center center no-repeat;
+    }
+  }
+}
+// background: url("~@/assets/icon/loading.gif") no-repeat;
+#nprogress .bar {
+  background: @theme !important; //自定义颜色
+}
+.ql-editor {
+  width: 100%;
+  min-height: 600px;
+  img {
+    max-width: 100%;
+    object-fit: contain;
+  }
+}
+//editor
+.editor,
+.ql-toolbar {
+  white-space: pre-wrap !important;
+  line-height: normal !important;
+}
+.quill-img {
+  display: none;
+}
+.ql-snow .ql-tooltip[data-mode="link"]::before {
+  content: "请输入链接地址:";
+}
+.ql-snow .ql-tooltip.ql-editing a.ql-action::after {
+  border-right: 0px;
+  content: "保存";
+  padding-right: 0px;
+}
+
+.ql-snow .ql-tooltip[data-mode="video"]::before {
+  content: "请输入视频地址:";
+}
+
+.ql-snow .ql-picker.ql-size .ql-picker-label::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item::before {
+  content: "14px";
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="small"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="small"]::before {
+  content: "10px";
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="large"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="large"]::before {
+  content: "18px";
+}
+.ql-snow .ql-picker.ql-size .ql-picker-label[data-value="huge"]::before,
+.ql-snow .ql-picker.ql-size .ql-picker-item[data-value="huge"]::before {
+  content: "32px";
+}
+
+.ql-snow .ql-picker.ql-header .ql-picker-label::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item::before {
+  content: "文本";
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="1"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="1"]::before {
+  content: "标题1";
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="2"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="2"]::before {
+  content: "标题2";
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="3"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="3"]::before {
+  content: "标题3";
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="4"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="4"]::before {
+  content: "标题4";
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="5"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="5"]::before {
+  content: "标题5";
+}
+.ql-snow .ql-picker.ql-header .ql-picker-label[data-value="6"]::before,
+.ql-snow .ql-picker.ql-header .ql-picker-item[data-value="6"]::before {
+  content: "标题6";
+}
+
+.ql-snow .ql-picker.ql-font .ql-picker-label::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item::before {
+  content: "标准字体";
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="serif"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="serif"]::before {
+  content: "衬线字体";
+}
+.ql-snow .ql-picker.ql-font .ql-picker-label[data-value="monospace"]::before,
+.ql-snow .ql-picker.ql-font .ql-picker-item[data-value="monospace"]::before {
+  content: "等宽字体";
+}
+@media screen and (max-width: 1800px) {
+  .app {
+    .index {
+      header {
+        .title-box {
+          &-nav {
+            .router-item {
+              padding: 0 15px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 1700px) {
+  .app {
+    .index {
+      header {
+        .title-box {
+          &-logo {
+            width: 500px;
+            // img {
+            //   left: 0;
+            // }
+          }
+          &-personal {
+            right: 10px;
+          }
+          &-nav {
+            .router-item {
+              padding: 0 15px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+@media screen and (max-width: 1600px) {
+  .app {
+    .index {
+      header {
+        .title-box {
+          &-nav {
+            &-logo {
+              width: 465px;
+              // img {
+              //   left: 0;
+              // }
+            }
+            .router-item {
+              padding: 0 10px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
