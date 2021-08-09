@@ -115,7 +115,7 @@ export default {
               }, 1000);
               this.$message({
                 type: "success",
-                duration: 2000,
+                //duration: 2000,
                 message: res.msg,
                 center: true
               });

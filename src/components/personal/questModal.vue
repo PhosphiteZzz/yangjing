@@ -22,7 +22,8 @@
       <el-form-item label="内容:" prop="question">
         <el-input
           type="textarea"
-          :rows="6"
+          resize="none"
+          :rows="8"
           placeholder="请输入内容"
           :maxlength="180"
           show-word-limit
@@ -86,7 +87,7 @@ export default {
               this.$message({
                 message: result.msg,
                 center: true,
-                duration: 2000,
+                //duration: 2000,
                 type: "success"
               });
               this.close();
@@ -131,7 +132,7 @@ export default {
     height: 36px;
     line-height: 36px;
     cursor: pointer;
-    border-radius: 2px;
+    border-radius: 4px;
     text-align: center;
     &:nth-last-child(1) {
       margin-left: 30px;

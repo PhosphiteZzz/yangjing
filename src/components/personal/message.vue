@@ -103,6 +103,9 @@ export default {
         question: this.questionFn,
         open_notice: this.openNoticeFn
       };
+      if(!type[item.targetType]){
+        return;
+      }
       type[item.targetType](item);
     },
     /** 答复 */

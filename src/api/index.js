@@ -210,3 +210,11 @@ export function checkEmailCode(data) {
     data
   });
 }
+
+//查询交易状态
+export function checkAlipayStatus(orderNum) {
+  return axios({
+    url: `/api/order/check/alipay/${orderNum}`,
+    method: "GET"
+  });
+}

@@ -21,7 +21,7 @@
     </div>
     <div class="bot">
       <p>
-        <span>电话：0518-82256216</span><span>邮箱：public@lygshjd.com</span
+        <span>电话：0518-82256886</span><span>邮箱：public@lygshjd.com</span
         ><span>集团地址：江苏省连云港市徐圩新区苏海路安全环保管理中心</span>
       </p>
       <p>

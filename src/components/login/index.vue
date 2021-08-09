@@ -204,7 +204,7 @@ export default {
               this.$message({
                 message: res.msg,
                 center: true,
-                duration: 2000,
+                //duration: 2000,
                 type: "success"
               });
               this.$router.push({
@@ -215,7 +215,7 @@ export default {
             this.$message({
               message: res.msg,
               center: true,
-              duration: 2000,
+              //duration: 2000,
               type: "warning"
             });
             this.$router.push({
@@ -237,7 +237,7 @@ export default {
             if (res.code === 200) {
               this.$message({
                 type: "success",
-                duration: 2000,
+                //duration: 2000,
                 message: "注册成功！请继续登录！",
                 center: true
               });
@@ -253,7 +253,7 @@ export default {
       if (!reg.test(this.formRegist.email)) {
         this.$message({
           type: "error",
-          duration: 2000,
+          //duration: 2000,
           message: "邮箱格式不正确！",
           center: true
         });
@@ -283,7 +283,7 @@ export default {
           }, 1000);
           this.$message({
             type: "success",
-            duration: 2000,
+            //duration: 2000,
             message: res.msg,
             center: true
           });

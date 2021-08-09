@@ -18,7 +18,43 @@
           <el-form-item label="社会统一信用代码">
             {{ form.creditCode }}
           </el-form-item>
-          <el-form-item label="行业类型">{{ typelabel }}</el-form-item>
+          <el-form-item label="行业类型">
+            <el-table :data="tableData" stripe :key="tableKey">
+              <el-table-column
+                prop="industryType"
+                label="行业"
+                width="160"
+                align="center"
+                show-overflow-tooltip
+              >
+                <template slot-scope="scope">
+                  <span>{{ scope.row.industry.title }}</span>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="enclosure"
+                label="附件"
+                width="160"
+                align="center"
+                show-overflow-tooltip
+              >
+                <template slot-scope="scope">
+                  <div
+                    class="link-tip"
+                    v-for="(item, index) in scope.row.enclosure"
+                    :key="index"
+                  >
+                    <viewer
+                      :images="[location.origin + '/api' + item.path]"
+                      :ref="'img' + item.id"
+                    >
+                      <img :src="location.origin + '/api' + item.path" />
+                    </viewer>
+                  </div>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form-item>
           <el-form-item label="营业期限"
             >{{ form.businessStart }} 至 {{ form.businessEnd }}</el-form-item
           >
@@ -31,34 +67,13 @@
             :label="item.name"
             :class="item.code"
           >
-            <!-- <div>
-              <img
-                :src="location.origin + '/api' + item.files[0].path"
-                alt=""
-                @error="imgerrorfun()"
-              />
-              <div v-if="item.files.length >= 2">
-                <img
-                  :src="location.origin + '/api' + item.files[1].path"
-                  alt=""
-                />
-              </div>
-            </div> -->
-
-            <viewer :images="enlargeSrc" ref="img">
-              <!-- <img
-                  v-for="(src, index) in enlargeSrc"
-                  :src="src"
-                  :key="index"
-                /> -->
-              <img :src="location.origin + '/api' + item.files[0].path" />
-            </viewer>
             <viewer
               :images="enlargeSrc"
               ref="img"
-              v-if="item.files.length >= 2"
+              v-for="(cell, idx) in item.files"
+              :key="idx"
             >
-              <img :src="location.origin + '/api' + item.files[1].path" />
+              <img :src="location.origin + '/api' + cell.path" />
             </viewer>
           </el-form-item>
         </div>
@@ -67,12 +82,12 @@
     <div class="list-edit" v-if="editIndex === 1">
       <div class="title">修改资料信息</div>
       <edit
-        @cancel="cancel"
-        :data="form"
-        :size="size"
-        @close="close"
-        @save="save"
-        :inOptions="inOptions"
+              @cancel="cancel"
+              :data="editForm"
+              :size="size"
+              @close="close"
+              @save="save"
+              :inOptions="inOptions"
       ></edit>
     </div>
     <!-- 正在审核中 -->
@@ -94,7 +109,7 @@
         </div>
       </div>
       <div class="check-btn">
-        <div class="btn return" @click="returnData">返回</div>
+        <div class="btn return" @click="returnData">暂不修改</div>
         <div class="btn edit" @click="reEdit">修改</div>
       </div>
     </div>
@@ -102,109 +117,136 @@
   <!-- 修改内容 -->
 </template>
 <script>
-import { getEditInfo, returnHome } from "@/api/personal.js";
-import { getIndustry } from "@/api/login.js";
-import edit from "./edit";
-export default {
-  data() {
-    return {
-      editIndex: null,
-      typelabel: "",
-      remark: "",
-      size: "normal",
-      location: location,
-      form: {},
-      inOptions: [],
-      enlargeSrc: [],
-      defaultImg: require("@/assets/icon/yj_icon_mr.png")
-    };
-  },
-  components: {
-    edit
-  },
-  methods: {
-    /** 关闭修改信息弹窗 */
-    close() {
-      this.editIndex = 0;
+  import {getEditInfo, returnHome} from "@/api/personal.js";
+  import {getIndustry} from "@/api/login.js";
+  import edit from "./edit";
+
+  export default {
+    data() {
+      return {
+        editIndex: null,
+        remark: "",
+        size: "normal",
+        location: location,
+        form: {},
+        editForm: {},
+        tableKey: true, //使表格发生变化
+        inOptions: [],
+        tableData: [],
+        enlargeSrc: [],
+        defaultImg: require("@/assets/icon/yj_icon_mr.png")
+      };
     },
-    /** 保存成功 */
-    save() {
-      this.editIndex = 2;
+    components: {
+      edit
     },
-    /** 修改信息 */
-    handleEdit() {
-      this.editIndex = 1;
-    },
-    imgerrorfun() {
-      let img = event.srcElement;
-      img.src = this.defaultImg;
-      img.onerror = null; //防止闪图
-    },
-    /** 返回信息主页 */
-    returnData() {
-      returnHome(this.form.id).then(result => {
-        if (result.code === 200) {
-          this.$message({
-            type: "success",
-            duration: 2000,
-            message: result.msg,
-            center: true
-          });
-          this.editIndex = 0;
-        }
-      });
-    },
-    /** 重新编辑 */
-    reEdit() {
-      this.handleEdit();
-    },
-    cancel() {},
-    /** 获取信息 */
-    getPersonalInfo() {
-      getEditInfo().then(result => {
-        switch (result.data.auditStatus) {
-          case "1":
-            this.editIndex = 2;
-            break;
-          case "3":
-            this.editIndex = 3;
-            this.remark = result.data.remark;
-            break;
-          default:
-            this.editIndex = 0;
-            break;
-        }
-        this.form = result.data;
-        this.typelabel = this.selectDictLabel(
-          this.inOptions,
-          Number(this.form.industryType)
-        );
-      });
-    },
-    /** 获取行业类型 */
-    getDict() {
-      getIndustry().then(result => {
-        this.handleRecursion(result.data);
-        this.getPersonalInfo();
-      });
-    },
-    /** 递归遍历 */
-    handleRecursion(list) {
-      list.forEach(item => {
-        this.inOptions.push({
-          dictValue: item.id,
-          dictLabel: item.label
+    methods: {
+      /** 关闭修改信息弹窗 */
+      close() {
+        this.editIndex = 0;
+      },
+      /** 保存成功 */
+      save() {
+        this.editIndex = 2;
+      },
+      /** 修改信息 */
+      handleEdit() {
+        this.getEditPersonalInfo()
+      },
+      imgerrorfun() {
+        let img = event.srcElement;
+        img.src = this.defaultImg;
+        img.onerror = null; //防止闪图
+      },
+      /** 返回信息主页 */
+      returnData() {
+
+        returnHome().then(result => {
+          if (result.code === 200) {
+            this.getPersonalInfo()
+            this.$message({
+              type: "success",
+              //duration: 2000,
+              message: result.msg,
+              center: true
+            });
+          }
         });
-        if (item.children) {
-          this.handleRecursion(item.children);
-        }
-      });
+      },
+      /** 重新编辑 */
+      reEdit() {
+        this.editForm = this.form
+        this.editIndex = 1;
+      },
+      cancel() {
+      },
+      /** 获取信息 status=1,查修改后数据*/
+      getPersonalInfo(status) {
+        getEditInfo({status: status}).then(result => {
+          switch (result.data.auditStatus) {
+            case "1":
+              this.editIndex = 2;
+              break;
+            case "3":
+              this.editIndex = 3;
+              this.remark = result.data.remark;
+              break;
+            default:
+              this.editIndex = 0;
+              break;
+          }
+          this.form = result.data;
+          this.tableData = [];
+          console.log(this.form, "~~~~~~~this.form");
+          if (this.form.memberIndustryFileList.length > 0) {
+            this.tableData = this.form.memberIndustryFileList.map(item => {
+              return {
+                enclosure: item.fileList,
+                industry: {
+                  id: item.industryId,
+                  title: this.selectDictLabel(
+                          this.inOptions,
+                          Number(item.industryId)
+                  )
+                }
+              };
+            });
+            console.log("result", this.tableData);
+          }
+        });
+      },
+      /** 获取修改后的数据*/
+      getEditPersonalInfo() {
+        console.log("getEditPersonalInfo")
+        getEditInfo({status: 1}).then(result => {
+          this.editForm = result.data;
+          this.editIndex = 1;
+        });
+      },
+      /** 获取行业类型 */
+      getDict() {
+        getIndustry().then(result => {
+          this.handleRecursion(result.data);
+          this.getPersonalInfo();
+        });
+      },
+      /** 递归遍历 */
+      handleRecursion(list) {
+        list.forEach(item => {
+          this.inOptions.push({
+            dictValue: item.id,
+            dictLabel: item.label
+          });
+          if (item.children) {
+            this.handleRecursion(item.children);
+          }
+        });
+      }
+    },
+    created() {
+      this.getDict();
     }
-  },
-  created() {
-    this.getDict();
-  }
-};
+  };
 </script>
 <style lang="less" scoped>
 .inforManage {
@@ -370,7 +412,8 @@ export default {
           line-height: 133px;
         }
       }
-      .idcard {
+      .idcard,
+      .cor_represent_idcard {
         .el-form-item__label {
           line-height: 114px;
         }
@@ -383,11 +426,47 @@ export default {
           }
         }
       }
+      .member_other {
+        .el-form-item__label {
+          line-height: 114px;
+        }
+        .el-form-item__content {
+          display: flex;
+          flex-wrap: wrap;
+          > div {
+            margin-right: 100px;
+            margin-bottom: 10px;
+          }
+        }
+      }
     }
   }
 }
 .list-edit {
   padding: 0 14px;
   height: auto;
+}
+/deep/.el-table {
+  border: 1px solid #eeeeee;
+  width: 322px;
+  td {
+    padding: 0;
+  }
+  th {
+    padding: 0;
+  }
+  .link-tip {
+    color: #66b1ff;
+    text-decoration: underline;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    img {
+      width: 50px;
+      height: 36px;
+      object-fit: contain;
+    }
+  }
 }
 </style>

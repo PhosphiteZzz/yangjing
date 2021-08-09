@@ -70,6 +70,7 @@ export default {
   methods: {
     /** 查询 */
     handleSearch() {
+      this.page.pageNum = 1;
       this.searchAction();
     },
     /** 查询方法 */

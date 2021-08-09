@@ -178,7 +178,6 @@ export default {
     },
     /** 清空搜索条件 */
     handleClear() {
-      // debugger;
       let newQuery = JSON.parse(JSON.stringify(this.$route.query));
       if (newQuery.record) {
         newQuery.record = "";
@@ -257,8 +256,11 @@ export default {
 .menu-bot {
   /deep/.el-menu {
     .is-opened {
-      span {
-        font-weight: bold;
+      // span {
+      //   font-weight: bold;
+      // }
+      .el-submenu__title {
+        background-color: #f7f2ee;
       }
     }
   }
@@ -271,6 +273,12 @@ export default {
     // a {
     //   color: @font;
     // }
+    .el-menu-item {
+      a {
+        text-indent: 17px;
+        text-align: left;
+      }
+    }
     .is-active {
       .active-router {
         color: @theme;

@@ -1,7 +1,7 @@
 <template>
-  <div class="info">
+  <div class="invitation">
     <div class="list-top">
-      <div class="list-top-title">我的项目</div>
+      <div class="list-top-title">邀请招标</div>
       <div class="list-top-search">
         <el-input
           v-model.trim="page.proName"
@@ -19,12 +19,12 @@
             <p>采购公告</p>
             <p>项目类型</p>
             <p>采购形式</p>
-            <p>购买时间</p>
+            <p>截止时间</p>
             <p>操作</p>
           </div>
           <div class="item" v-for="item in mainList" :key="item.id">
             <div v-text="item.proName" :title="item.proName"></div>
-            <div v-text="item.noticeTitle" :title="item.noticeTitle"></div>
+            <div v-text="item.title" :title="item.title"></div>
             <div
               v-text="typeFormat(item.tradeType)"
               :title="typeFormat(item.tradeType)"
@@ -35,24 +35,17 @@
             ></div>
             <div
               class="item-time"
-              v-text="item.createTime"
-              :title="item.createTime"
+              v-text="item.sendEndTime"
+              :title="item.sendEndTime"
             ></div>
             <div>
-              <span @click="downLoad(item.noticeId)">下载招标文件</span>
-              <span @click="enterDetails(item.noticeId)">详情</span>
-              <span @click="tenderSub(item.noticeId)" v-if="item.bidWay == 2">{{
-                item.tenderFileId ? "重递交标书" : "递交标书"
-              }}</span>
               <span
-                @click="handleQuote(0, item.noticeId, item.tenderFile && item.tenderFile.quote1)"
-                v-if="!item.notice.resultStatus && !item.notice.secondQuoteFlag"
-                >一次报价</span
+                @click="enterDetails(item.id)"
+                >详情</span
               >
               <span
-                @click="handleQuote(1, item.noticeId, item.tenderFile && item.tenderFile.quote2)"
-                v-if="!item.notice.resultStatus && item.notice.secondQuoteFlag"
-                >二次报价</span
+                @click="tenderSub(item.id, item.quoteMoney, item.proName)"
+                >{{ item.quoteMoney ? "修改报价" : "提交报价" }}</span
               >
             </div>
           </div>
@@ -72,16 +65,9 @@
     <div v-else class="list-bot">
       <no-result></no-result>
     </div>
-    <!-- 上传弹窗 -->
-    <my-item-upload
-      v-if="visibleUpload"
-      @close="closeModal"
-      @success="success"
-      :noticeId="noticeId"
-    ></my-item-upload>
     <!-- 报价弹窗 -->
     <submit-quote
-      v-if="visibleQuote"
+      v-if="submitVisible"
       :quote="quote"
       @close="handleClose"
       @success="handleSuccess"
@@ -89,86 +75,60 @@
   </div>
 </template>
 <script>
-import { getMyItem } from "@/api/personal.js";
-import { getDicts, downloadFiles } from "@/api/index.js";
-import MyItemUpload from "./myItemUpload.vue";
-import SubmitQuote from "./submitQuote.vue";
+import { invitationBidding } from "@/api/personal.js";
+import { getDicts } from "@/api/index.js";
+import submitQuote from "./submitQuote.vue";
 export default {
   data() {
     return {
       total: 0,
-      visibleUpload: false,
-      visibleQuote: false,
+      submitVisible: false,
+      quote: {},
       type: "trade_type,bid_type",
       tradeOptions: [],
       bidOptions: [],
       mainList: [],
-      quote: {},
       page: {
         proName: "",
         pageNum: 1,
         pageSize: 7
-      },
-      noticeId: null
+      }
     };
   },
   components: {
-    MyItemUpload,
-    SubmitQuote
+    submitQuote
   },
   methods: {
     /** guanbi */
-    closeModal() {
-      this.visibleUpload = false;
+    handleClose() {
+      this.submitVisible = false;
     },
     /** 查询 */
     handleSearch() {
+      this.page.pageNum = 1;
       this.searchAction();
     },
     /** 进入详情 */
     enterDetails(id) {
       this.$router.push({
-        path: "/index/transdetails",
+        path: "/index/invitdetails",
         query: {
-          noticeId: id,
-          fLeave: "交易信息",
-          index: 0
+          noticeId: id
         }
       });
     },
-    /** 关闭报价弹窗 */
-    handleClose() {
-      this.visibleQuote = false;
+    /** 提交/修改报价 */
+    tenderSub(noticeId, quoteMoney, proName) {
+      this.quote = {
+        noticeId,
+        quoteMoney: !quoteMoney ? "" : quoteMoney,
+        proName
+      };
+      this.submitVisible = true;
     },
     handleSuccess() {
-      this.visibleQuote = false;
-      this.searchAction();
-    },
-    /** 报价 */
-    handleQuote(type, noticeId, price) {
-      this.quote = {
-        type,
-        noticeId,
-        price
-      };
-      this.visibleQuote = true;
-    },
-    /** 递交标书 */
-    tenderSub(id) {
-      this.noticeId = id;
-      this.visibleUpload = true;
-    },
-    /** 下载标书 */
-    downLoad(id) {
-      downloadFiles(id).then(result => {
-        if (result.code === 200) {
-          this.downloadFiles(result.msg);
-        }
-      });
-    },
-    success() {
-      this.closeModal();
-      this.searchAction();
+      this.handleClose();
+      this.handleSearch();
     },
     // 字典翻译
     typeFormat(type) {
@@ -180,7 +140,7 @@ export default {
     /** 查询方法 */
     searchAction() {
       //主体信息
-      getMyItem(this.page).then(result => {
+      invitationBidding(this.page).then(result => {
         this.mainList = result.rows;
         this.total = result.total;
       });
@@ -200,7 +160,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.info {
+.invitation {
   height: 100%;
   padding: 0 24px 0 14px;
   background: @white;
@@ -219,7 +179,7 @@ export default {
         text-align: center;
         border-right: 1px solid @border-less;
         &:nth-of-type(1) {
-          width: 200px;
+          width: 214px;
         }
         &:nth-of-type(2) {
           flex: 1;
@@ -234,7 +194,7 @@ export default {
           width: 102px;
         }
         &:nth-of-type(6) {
-          width: 270px;
+          width: 200px;
           border: none;
         }
       }
@@ -257,7 +217,7 @@ export default {
         justify-content: center;
         word-break: break-all;
         &:nth-of-type(1) {
-          width: 200px;
+          width: 214px;
         }
         &:nth-of-type(2) {
           flex: 1;
@@ -273,7 +233,7 @@ export default {
           word-break: normal;
         }
         &:nth-of-type(6) {
-          width: 270px;
+          width: 200px;
           justify-content: space-around;
           border: none;
           span {

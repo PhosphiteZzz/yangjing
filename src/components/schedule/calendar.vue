@@ -27,8 +27,13 @@
           <p>项目类型</p>
         </div>
         <div class="item" v-for="item in currentList" :key="item.id">
-          <p v-text="item.sendEndTime" :title="item.sendEndTime"></p>
-          <p v-text="item.proName" :title="item.proName"></p>
+          <p v-text="item.openTime" :title="item.sendEndTime"></p>
+          <p
+            class="routeLink"
+            @click="handleRoute(item.noticeId)"
+            v-text="item.proName"
+            :title="item.proName"
+          ></p>
           <p
             v-text="typeFormat(item.tradeType)"
             :title="typeFormat(item.tradeType)"
@@ -103,6 +108,17 @@ export default {
         result.data.forEach(item => {
           this.result[item.date] = item.num;
         });
+      });
+    },
+    /** 跳转 */
+    handleRoute(noticeId) {
+      this.$router.push({
+        path: "/index/transdetails",
+        query: {
+          id: noticeId,
+          fLeave: "交易信息",
+          index: 0
+        }
       });
     }
   },
@@ -236,6 +252,10 @@ export default {
     .table {
       margin-top: 20px;
       border: 1px solid @border-less;
+      .routeLink {
+        text-decoration: underline;
+        cursor: pointer;
+      }
       .header,
       .item {
         display: flex;

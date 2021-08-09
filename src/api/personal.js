@@ -1,10 +1,11 @@
 import axios from "./http";
 
 //获取供应商修改的信息
-export function getEditInfo() {
+export function getEditInfo(data) {
   return axios({
     url: `/api/member/modify`,
-    method: "GET"
+    method: "POST",
+    data
   });
 }
 
@@ -44,9 +45,9 @@ export function getMessageDetails(id) {
 }
 
 //返回个人信息主页
-export function returnHome(id) {
+export function returnHome() {
   return axios({
-    url: `/api/member/reSubmitModify/${id}`,
+    url: "/api/member/reSubmitModify",
     method: "POST"
   });
 }
@@ -76,4 +77,54 @@ export function getReplyList(params) {
     method: "GET",
     params
   });
+}
+
+//递交标书
+export function postTenderFile(data, onUploadProgress) {
+  return axios({
+    url: "/api/web/member/tenderfile/submit",
+    method: "POST",
+    data,
+    headers: {
+      "Content-Type": "multipart/form-data"
+    },
+    onUploadProgress
+  });
+}
+
+
+//邀请招标
+export function invitationBidding(params) {
+  return axios({
+    url: "/api/web/invite/inviteList",
+    method: "GET",
+    params
+  })
+}
+
+//招标报价
+export function invitationSubmit(data) {
+  return axios({
+    url: "/api/web/notice/quote/submit",
+    method: "POST",
+    data
+  })
+}
+
+//邀请招标详情
+export function invitationDetail(params) {
+  return axios({
+    url: "/api/web/invite/inviteInfo",
+    method: "GET",
+    params
+  })
+}
+
+//报价
+export function quoteRequest(data) {
+  return axios({
+    url: "/api/web/member/tenderfile/submitQuote",
+    method: "POST",
+    data
+  })
 }

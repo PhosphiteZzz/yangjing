@@ -1,9 +1,16 @@
 const path = require("path");
 const webpack = require("webpack");
-const resolve = function(dir) {
+const resolve = function (dir) {
   return path.join(__dirname, dir);
 };
 const vars = path.resolve(__dirname, "src/assets/styles/common.less");
+
+const px2rem = require('postcss-px2rem')
+// 配置基本大小
+const postcss = px2rem({
+  // 基准大小 baseSize，需要和rem.js中相同
+  remUnit: 16
+})
 module.exports = {
   chainWebpack: config => {
     config.resolve.alias
@@ -30,9 +37,10 @@ module.exports = {
       "/api": {
         /* 目标代理服务器地址 */
         // target: "", //
-        // target: "https://bid.hongaodata.com/api",
-        // target: "http://192.168.0.111:8888",
-        target: "http://192.168.0.111:8888",
+        target: "https://zb.lygshjd.com/",
+        // target: "http://192.168.0.101:8888",
+        // target: "http://192.168.0.139:8888",
+        secure: false,
         /* 允许跨域 */
         changeOrigin: true,
         ws: true
@@ -52,7 +60,9 @@ module.exports = {
   css: {
     loaderOptions: {
       postcss: {
-        plugins: []
+        plugins: [
+          postcss
+        ]
       },
       less: {
         globalVars: {

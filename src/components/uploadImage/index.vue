@@ -97,7 +97,11 @@ export default {
     this.$nextTick(() => {
       if (this.list && Object.keys(this.list).length > 0) {
         this.filelist = this.list;
-        this.choosePic(location.origin + "/api" + this.filelist.path);
+        this.choosePic(
+          location.origin +
+            "/api" +
+            (this.filelist.path || this.filelist.filePath)
+        );
       }
     });
   },
@@ -142,7 +146,7 @@ export default {
         this.$message({
           type: "error",
           message: "请上传png，jpg，jpeg格式图片！",
-          duration: 2000,
+          //duration: 2000,
           center: true
         });
         return false;
@@ -157,7 +161,7 @@ export default {
       this.$message({
         type: "error",
         message: "上传失败",
-        duration: 2000,
+        //duration: 2000,
         center: true
       });
       this.loading.close();

@@ -1,2 +1,1 @@
-# yj-bid
-洋井石化
+# yangjing petrifaction

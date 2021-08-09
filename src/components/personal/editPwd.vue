@@ -20,16 +20,13 @@
           :minlength="6"
         ></el-input>
       </el-form-item>
-      <el-form-item
-        label="确认新密码"
-        prop="confirmPassWord"
-        :maxlength="16"
-        :minlength="6"
-      >
+      <el-form-item label="确认新密码" prop="confirmPassWord">
         <el-input
           v-model.trim="form.confirmPassWord"
           type="password"
           @blur="blurPassword"
+          :maxlength="16"
+          :minlength="6"
         ></el-input>
       </el-form-item>
       <el-form-item>
@@ -46,31 +43,31 @@ export default {
       form: {
         password: "",
         newPassWord: "",
-        confirmPassWord: "",
+        confirmPassWord: ""
       },
       rules: {
         password: [
           { required: true, message: "请输入原始密码", trigger: "blur" },
           {
-            pattern: /^(?![\d]+$)(?![a-zA-Z]+$)(?![^\da-zA-Z]+$).{6,20}$/,
-            message: "只能输入6-20个字母、数字、下划线  ",
-          },
+            pattern: /^[\da-zA-Z_]{6,16}$/,
+            message: "请输入6-16个字母、数字、下划线密码"
+          }
         ],
         newPassWord: [
           { required: true, message: "请输入新密码", trigger: "blur" },
           {
-            pattern: /^(?![\d]+$)(?![a-zA-Z]+$)(?![^\da-zA-Z]+$).{6,20}$/,
-            message: "只能输入6-20个字母、数字、下划线  ",
-          },
+            pattern: /^(?![\d]+$)(?![a-zA-Z]+$)(?![^\da-zA-Z]+$)[\da-zA-Z_]{6,16}$/,
+            message: "请输入6-16个字母、数字、下划线组合密码"
+          }
         ],
         confirmPassWord: [
           { required: true, message: "请输入确认新密码", trigger: "blur" },
           {
-            pattern: /^(?![\d]+$)(?![a-zA-Z]+$)(?![^\da-zA-Z]+$).{6,20}$/,
-            message: "只能输入6-20个字母、数字、下划线  ",
-          },
-        ],
-      },
+            pattern: /^(?![\d]+$)(?![a-zA-Z]+$)(?![^\da-zA-Z]+$)[\da-zA-Z_]{6,16}$/,
+            message: "请输入6-16个字母、数字、下划线组合密码"
+          }
+        ]
+      }
     };
   },
   methods: {
@@ -80,34 +77,34 @@ export default {
         this.$message({
           message: "两次密码输入的不一致！",
           center: true,
-          duration: 2000,
-          type: "error",
+          //duration: 2000,
+          type: "error"
         });
       }
     },
     /** 修改密码 */
     handleEdit() {
-      this.$refs.form.validate((valid) => {
+      this.$refs.form.validate(valid => {
         if (valid) {
-          getEditPass(this.form).then((result) => {
+          getEditPass(this.form).then(result => {
             if (result.code === 200) {
               this.$message({
                 message: "密码修改成功，请重新登录！",
                 center: true,
-                duration: 2000,
-                type: "success",
+                //duration: 2000,
+                type: "success"
               });
               setTimeout(() => {
                 this.$router.push({
-                  path: "/login/index",
+                  path: "/login/index"
                 });
               }, 2000);
             }
           });
         }
       });
-    },
-  },
+    }
+  }
 };
 </script>
 <style lang="less" scoped>

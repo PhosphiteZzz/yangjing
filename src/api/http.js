@@ -11,6 +11,9 @@ import { Encrypt, Decrypt } from "@/api/aes";
 
 let loading = null; //定义loading变量
 
+//不需要loading白名单
+const loadingWhite = ["/api/web/member/tenderfile/submit"];
+
 //开始 加载loading
 let startLoading = () => {
   loading = Loading.service({
@@ -65,7 +68,7 @@ let tryHideFullScreenLoading = () => {
 /*
     设置超时时间和跨域是否允许携带凭证
 */
-axios.defaults.timeout = 10000;
+axios.defaults.timeout = 60000;
 axios.defaults.withCredentials = true;
 
 /*
@@ -84,7 +87,9 @@ axios.defaults.headers["Content-Type"] = "application/json;charset=UTF-8";
  */
 axios.interceptors.request.use(
   config => {
-    showFullScreenLoading();
+    if (!loadingWhite.includes(config.url)) {
+      showFullScreenLoading();
+    }
     // config.headers.Content-Type = 'application/json;charset=UTF-8'
     // 对请求数据进行aes加密
     // config.data = Encrypt(JSON.stringify(config.data))
@@ -112,6 +117,7 @@ axios.interceptors.request.use(
 axios.interceptors.response.use(
   response => {
     tryHideFullScreenLoading();
+
     // 对响应进行aes解密
     // response.data = JSON.parse(Decrypt(response.data))
     if (response.data.code === 401) {

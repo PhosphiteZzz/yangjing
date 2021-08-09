@@ -13,7 +13,7 @@
           :key="index"
         >
           <div class="icon"></div>
-          <div class="title" v-text="item.title"></div>
+          <div class="title" v-text="item.title" :title="item.title"></div>
           <div class="time" v-text="timeTransFor(item.createTime)"></div>
         </div>
       </div>

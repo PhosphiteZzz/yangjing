@@ -231,7 +231,7 @@ export default {
       this.$message({
         type: "success",
         message: "您已成功退出登录！",
-        duration: 2000,
+        //duration: 2000,
         center: true
       });
       //如果在用户中心退出，直接跳到首页
@@ -317,7 +317,8 @@ export default {
         right: 39px;
         top: 40px;
         cursor: pointer;
-        background: url("~@/assets/icon/yj_icon_ss.png");
+        background: url("~@/assets/icon/yj_icon_ss.png") center center no-repeat;
+        background-size: 100% 100%;
       }
       &-personal {
         position: absolute;

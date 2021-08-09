@@ -39,7 +39,12 @@
           </div>
         </div>
         <!-- 采购公告 -->
-        <div class="details-table" v-show="selectIdx === 0" v-if="showNotice">
+        <div
+          class="details-table"
+          v-show="selectIdx === 0"
+          v-if="showNotice"
+          id="details-table"
+        >
           <div>
             <div class="table-title">采购公告</div>
             <div class="table-cont" v-text="noticeForm.title"></div>
@@ -48,11 +53,11 @@
             <div class="table-title">发布时间</div>
             <div class="table-cont" v-text="noticeForm.createTime"></div>
           </div>
-          <div>
-            <div class="table-title">行业类型</div>
+          <div v-if="tradeOptions.length > 0">
+            <div class="table-title">交易信息分类</div>
             <div
               class="table-cont"
-              v-text="commonFormatter(tradeOptions, noticeForm.proType)"
+              v-text="commonFormatter(tradeOptions, noticeForm.tradeType)"
             ></div>
           </div>
           <div>
@@ -61,7 +66,7 @@
               {{ noticeForm.getStartTime }} 至 {{ noticeForm.getEndTime }}
             </div>
           </div>
-          <div>
+          <div v-if="wayOptions.length > 0">
             <div class="table-title">采购文件/资格预审文件获取方法</div>
             <div
               class="table-cont"
@@ -87,7 +92,7 @@
             <div class="table-title">开标地点</div>
             <div class="table-cont" v-text="noticeForm.tenderRoom"></div>
           </div>
-          <div>
+          <div v-if="noticeOptions.length > 0">
             <div class="table-title">投标文件/资格预审申请文件递交方式</div>
             <div
               class="table-cont"
@@ -109,6 +114,12 @@
             <button @click="payForFiles" v-else>
               购买文件
             </button>
+            <button
+              class="bid-doc"
+              @click="tenderSub"
+              v-if="noticeForm.buyCount >= 1 && noticeForm.bidWay == '2'"
+              v-text="noticeForm.tenderFileId ? '重递交标书' : '递交标书'"
+            ></button>
           </section>
         </div>
         <!-- 澄清答疑 -->
@@ -159,7 +170,7 @@
             <div class="table-cont">正常公告</div>
           </div>
           <div class="explan-item">
-            <div class="table-title">行业类型</div>
+            <div class="table-title">交易信息分类</div>
             <div class="table-cont">{{ resultForm.tradeType }}</div>
           </div>
           <div class="explan-item">
@@ -215,10 +226,10 @@
             <span class="icon"></span><span class="text">微信</span>
             <el-radio v-model="radio" :label="1"><span></span></el-radio>
           </label>
-          <!-- <label class="aliPay">
+          <label class="aliPay">
             <span class="icon"></span><span class="text">支付宝</span>
             <el-radio v-model="radio" :label="2"><span></span></el-radio>
-          </label> -->
+          </label>
         </el-form-item>
         <div class="action">
           <div @click="handlePay">支付</div>
@@ -242,9 +253,16 @@
         </div>
       </div>
     </el-dialog>
+    <myItemUpload
+      v-if="uploadVisible"
+      @close="closeUploadModal"
+      @success="success"
+      :noticeId="currentNid"
+    ></myItemUpload>
   </div>
 </template>
 <script>
+import { getOrderCode, checkSocketStatus } from "@/api/index.js";
 import {
   getTradeDetails,
   getExplanationDetails,
@@ -255,8 +273,9 @@ import {
   getDicts,
   downloadFiles
 } from "@/api/index.js";
-import { getToken, getUserInfo } from "@/utils/auth.js";
+import { getToken, getUserInfo, getCode } from "@/utils/auth.js";
 import nocontent from "@/components/common/nocontent.vue";
+import myItemUpload from "@/components/personal/myItemUpload.vue";
 export default {
   data() {
     return {
@@ -271,6 +290,7 @@ export default {
       noticeOptions: [],
       currentNid: "",
       visible: false,
+      uploadVisible: false,
       open: false,
       radio: 1,
       //采购公告form
@@ -289,7 +309,9 @@ export default {
         isAllowUnion: "",
         tradeType: "",
         buyCount: -1,
-        proName: ""
+        proName: "",
+        tenderFileId: "",
+        bidWay: ""
       },
       //澄清答疑form
       explanForm: {
@@ -319,13 +341,23 @@ export default {
       },
       showNotice: true,
       showExplan: true,
-      showResult: true
+      showResult: true,
+      timer: null,
+      time: 30000,
+      socket: null,
+      tap: null
     };
   },
   components: {
-    nocontent
+    nocontent,
+    myItemUpload
   },
   methods: {
+    routerLeave() {
+      this.$router.push({
+        path: "/index/transInfo/all"
+      });
+    },
     /** 关闭弹窗 */
     closeModal() {
       this.visible = false;
@@ -342,6 +374,18 @@ export default {
         }
       });
     },
+    /** 打开上传窗口 */
+    tenderSub() {
+      this.uploadVisible = true;
+    },
+    /** guanbi */
+    closeUploadModal() {
+      this.uploadVisible = false;
+    },
+    /** 上传成功 */
+    success() {
+      this.closeUploadModal();
+    },
     /** 购买文件 */
     payForFiles() {
       let token = getToken();
@@ -349,7 +393,7 @@ export default {
         this.$message({
           message: "需要登录之后才能继续操作！",
           center: true,
-          duration: 2000,
+          //duration: 2000,
           type: "error"
         });
         // this.$router.push("/login/index");
@@ -390,7 +434,7 @@ export default {
           this.$message({
             message: "购买成功，即将刷新页面!",
             center: true,
-            duration: 2000,
+            //duration: 2000,
             type: "success"
           });
           this.closeOpenModal();
@@ -408,15 +452,10 @@ export default {
     },
     /**支付 */
     handlePay() {
-      if (this.radio === 2) {
-        this.$message({
-          message: "暂时不支持支付宝支付",
-          center: true,
-          duration: 2000,
-          type: "error"
-        });
-        return;
-      }
+      // if (this.radio === 2) {
+      //   this.handleAlipay();
+      //   return;
+      // }
       let path = this.radio === 1 ? "/index/wepay" : "/index/alipay";
       this.$router.push({
         path,
@@ -425,6 +464,73 @@ export default {
           payType: this.radio
         }
       });
+    },
+    /** 支付宝支付 */
+    handleAlipay() {
+      let params = {
+        noticeId: this.currentNid,
+        payType: this.radio
+      };
+      getOrderCode(params).then(result => {
+        if (result.code === 200) {
+          this.tap = window.open();
+          let divForm = this.tap.document.getElementsByTagName("divform");
+          if (divForm.length) {
+            this.tap.document.body.removeChild(divForm[0]);
+          }
+          const div = this.tap.document.createElement("divform");
+          div.innerHTML = result.data; // data就是接口返回的form 表单字符串
+          this.tap.document.body.appendChild(div);
+          this.tap.document.documentElement.style.height = "100%";
+          document.querySelector("body").style.height = "100%";
+          this.tap.document.forms[0].submit();
+          this.openSocket();
+          this.setSocket();
+        }
+      });
+    },
+    /** socket连接 */
+    openSocket() {
+      // m 供应商和专家， u 后台用户
+      let userType = "m";
+      let userId = getUserInfo().userId;
+      // let socketUrl = `ws://192.168.0.101:8888/api/websocket/${userType}/${userId}/${getCode()}`;
+      let socketUrl = `wss://zb.lygshjd.com/websocket/${userType}/${userId}/${getCode()}`;
+
+      this.socket = new this.$webSocket({ ip: socketUrl });
+      this.socket.onmessage = e => {
+        if (e.action && e.action === "pay_success") {
+          this.tap.close();
+          this.$message({
+            message: "支付成功！",
+            center: true,
+            //duration: 2000,
+            type: "success"
+          });
+          location.reload();
+        }
+      };
+    },
+    /** 重新连接socket */
+    reConnectSocket() {
+      this.socket.closeSocket();
+    },
+    /** 每30s请求一次长连接 */
+    setSocket() {
+      if (this.timer) {
+        clearInterval(this.timer);
+      }
+      this.timer = setInterval(() => {
+        let params = {
+          userType: Number(getUserInfo().userType) === 0 ? "u" : "m",
+          userId: getUserInfo().userId,
+          randomCode: getCode()
+        };
+        checkSocketStatus(params).then(result => {
+          if (result.code !== 200) return;
+          !result.online ? this.reConnectSocket() : "";
+        });
+      }, this.time);
     },
     routerTrade() {
       this.$router.push({
@@ -468,8 +574,9 @@ export default {
           for (let i in this.noticeForm) {
             this.noticeForm[i] = result.data[i];
           }
-          this.noticeForm.proType = result.data.project.proType;
+          this.noticeForm.tradeType = result.data.project.tradeType;
           this.noticeForm.proName = result.data.project.proName;
+          this.noticeForm.bidWay = result.data.project.bidWay;
           this.content = result.data.content;
           this.tLeave = this.commonFormatter(
             this.tradeOptions,
@@ -556,7 +663,7 @@ export default {
     if (Object.keys(query).length <= 0) {
       this.$message({
         type: "error",
-        duration: 2000,
+        //duration: 2000,
         center: true,
         message: "地址发生变化，回到上一页！"
       });
@@ -633,9 +740,12 @@ export default {
             font-size: 18px;
             color: @white;
             line-height: 50px;
-            margin: 20px auto 25px;
+            margin: 20px 0 25px;
             text-align: center;
             cursor: pointer;
+          }
+          .bid-doc {
+            margin-left: 20px;
           }
         }
         > div {
@@ -769,6 +879,8 @@ export default {
           .aliPay {
             margin-left: 22px;
             .icon {
+              width: 20px;
+              height: 20px;
               background: url("~@/assets/icon/yj_icon_zfb.png") center center
                 no-repeat;
             }

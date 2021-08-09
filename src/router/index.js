@@ -266,6 +266,11 @@ const routes = [
         component: () => import("@c/details/transdetails.vue")
       },
       {
+        path: "/index/invitdetails",
+        name: "邀请招标详情",
+        component: () => import("@c/details/invitdetails.vue")
+      },
+      {
         path: "/index/alipay",
         name: "支付宝支付",
         component: () => import("@c/pay/alipay.vue"),

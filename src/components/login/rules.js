@@ -26,15 +26,15 @@ const registRules = {
   password: [
     { required: true, message: "请输入密码", trigger: "blur" },
     {
-      pattern: /^(?![\d]+$)(?![a-zA-Z]+$)(?![^\da-zA-Z]+$).{6,20}$/,
-      message: "6-16位大小写字母、数字、符号组合"
+      pattern: /^(?![\d]+$)(?![a-zA-Z]+$)(?![^\da-zA-Z]+$)[\da-zA-Z_]{6,16}$/,
+      message: "请输入6-16个字母、数字、下划线组合密码",
     }
   ],
   confirmPassWord: [
     { required: true, message: "请确认密码", trigger: "blur" },
     {
-      pattern: /^(?![\d]+$)(?![a-zA-Z]+$)(?![^\da-zA-Z]+$).{6,20}$/,
-      message: "6-16位大小写字母、数字、符号组合"
+      pattern: /^(?![\d]+$)(?![a-zA-Z]+$)(?![^\da-zA-Z]+$)[\da-zA-Z_]{6,16}$/,
+      message: "请输入6-16个字母、数字、下划线组合密码",
     }
   ]
 };

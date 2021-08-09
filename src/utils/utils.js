@@ -158,6 +158,6 @@ export default {
   },
   downloadFiles(fileName) {
     window.location.href =
-      "/api/common/download?delete=true&fileName=" + encodeURI(fileName);
+      "/api/common/download?delete=true&fileName=" + encodeURIComponent(fileName);
   }
 };

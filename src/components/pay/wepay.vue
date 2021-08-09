@@ -52,7 +52,7 @@ export default {
       socket: null,
       status: true,
       timer: null,
-      time: 30000,
+      time: 30000
     };
   },
   watch: {
@@ -61,17 +61,17 @@ export default {
         // this.init();log
         this.status = false;
       },
-      deep: true,
-    },
+      deep: true
+    }
   },
   methods: {
     getCode(query) {
       let { noticeId, payType } = query;
       let params = {
         noticeId: Number(noticeId),
-        payType: Number(payType),
+        payType: Number(payType)
       };
-      getOrderCode(params).then((result) => {
+      getOrderCode(params).then(result => {
         if (result.code === 200) {
           this.status = true;
           this.amount = result.money;
@@ -96,9 +96,9 @@ export default {
         let params = {
           userType: Number(getUserInfo().userType) === 0 ? "u" : "m",
           userId: getUserInfo().userId,
-          randomCode: getCode(),
+          randomCode: getCode()
         };
-        checkSocketStatus(params).then((result) => {
+        checkSocketStatus(params).then(result => {
           if (result.code !== 200) return;
           !result.online ? this.reConnectSocket() : "";
         });
@@ -115,8 +115,8 @@ export default {
         query: {
           noticeId: id,
           fLeave: "交易信息",
-          index: 0,
-        },
+          index: 0
+        }
       });
     },
     /** socket连接 */
@@ -128,18 +128,24 @@ export default {
       let socketUrl = `wss://zb.lygshjd.com/websocket/${userType}/${userId}/${getCode()}`;
 
       this.socket = new this.$webSocket({ ip: socketUrl });
-      this.socket.onmessage = (e) => {
+      this.socket.onmessage = e => {
         if (e.action && e.action === "pay_success") {
           if (e.noticeId == this.$route.query.noticeId) {
             this.changeStatus(e.noticeId);
+            this.$message({
+              message: "支付成功！",
+              center: true,
+              //duration: 2000,
+              type: "success"
+            });
           }
           return;
         }
         this.$message({
-          message: "支付失败，请刷新页面或者联系管理员！",
+          message: "支付失败，请刷新页面重试或者联系管理员！",
           center: true,
-          duration: 2000,
-          type: "error",
+          //duration: 2000,
+          type: "error"
         });
       };
     },
@@ -153,13 +159,13 @@ export default {
       query.noticeId = noticeId;
       this.$router.replace({
         path: "/index/wepay",
-        query,
+        query
       });
     },
     /** 下载标书 */
     downloadBidDoc() {
       this.$router.push({
-        path: "/index/personal/myItem",
+        path: "/index/personal/myItem"
       });
     },
     /** init */
@@ -169,8 +175,8 @@ export default {
         this.$message({
           message: "获取订单状态异常，请返回重新操作！",
           center: true,
-          duration: 2000,
-          type: "error",
+          //duration: 2000,
+          type: "error"
         });
         return;
       }
@@ -178,15 +184,15 @@ export default {
     },
     beforeunloadFn() {
       clearInterval(this.timer);
-    },
+    }
   },
   created() {
     this.init();
-    window.addEventListener("beforeunload", (e) => this.beforeunloadFn(e));
+    window.addEventListener("beforeunload", e => this.beforeunloadFn(e));
   },
   beforeDestroy() {
     clearInterval(this.timer);
-  },
+  }
 };
 </script>
 <style lang="less" scoped>

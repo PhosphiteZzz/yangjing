@@ -5,7 +5,7 @@
       <div class="address-top-connect">
         <div class="connect-title">联系我们<span>/ CONTACT US</span></div>
         <div class="connect-contact">
-          <span>电话：0518-82256216</span><span>邮箱：public@lygshjd.com</span>
+          <span>电话：0518-82256886</span><span>邮箱：public@lygshjd.com</span>
         </div>
         <div class="connect-contact">
           <span> 集团地址：江苏省连云港市徐圩新区苏海路安全环保管理中心</span>
@@ -19,10 +19,10 @@
           <span>技术支持：中电鸿信信息科技有限公司</span>
         </div>
         <div class="connect-contact">
-          <span>电话：13357868100（仅接受技术咨询）</span>
-          <span>推荐使用谷歌浏览器</span>
+          <span>电话：13222759399（仅接受技术咨询）</span>
         </div>
       </div>
+      <div class="recommend" @click="handleDown"></div>
     </div>
     <div class="address-bot">
       <div>版权所有：Copyright©2020 江苏洋井石化集团有限公司</div>
@@ -35,6 +35,16 @@ export default {
   data() {
     return {};
   },
+  methods: {
+    handleDown() {
+      const downloadHref = "https://www.google.cn/chrome/index.html";
+      let link = document.createElement("a"); //创建a标签
+      link.href = downloadHref;
+      link.target = "_blank";
+      link.click();
+      document.body.removeChild(link);
+    }
+  }
 };
 </script>
 <style lang="less" scoped>
@@ -45,6 +55,7 @@ export default {
     height: 79%;
     display: flex;
     align-items: center;
+    position: relative;
     &-logo {
       width: 240px;
       height: 70px;
@@ -70,6 +81,7 @@ export default {
         }
       }
       .connect-contact {
+        position: relative;
         color: #cccccc;
         line-height: 26px;
         display: flex;

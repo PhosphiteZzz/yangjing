@@ -62,7 +62,7 @@ export default {
     if (Object.keys(query).length <= 0) {
       this.$message({
         type: "error",
-        duration: 2000,
+        //duration: 2000,
         center: true,
         message: "地址发生变化，回到上一层！"
       });
@@ -72,11 +72,21 @@ export default {
     this.fLeave = query.fLeave;
     this.tLeave = query.tLeave;
     getDetails(query.id).then(result => {
-      this.content = result.data.content;
-      this.title = result.data.title;
-      this.createTime = result.data.createTime;
-      if (result.data.sysFiles) {
-        this.sysFiles = result.data.sysFiles;
+      if (result.data) {
+        this.content = result.data.content;
+        this.title = result.data.title;
+        this.createTime = result.data.createTime;
+        let files = result.data.sysFiles;
+        if (files) {
+          let arr = []
+          for (let item of files) {
+            // 附件过滤轮播图和行业新闻的展示图片
+            if (item.categoryCode != 'news_attach'  &&  item.categoryCode != 'news_banner'){
+              arr.push(item)
+            }
+          }
+          this.sysFiles = arr;
+        }
       }
     });
   }

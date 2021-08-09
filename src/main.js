@@ -30,6 +30,7 @@ import { Message } from "element-ui";
 import { checkLogin } from "@/api/login.js";
 import Viewer from "v-viewer";
 import "viewerjs/dist/viewer.css";
+import './rem'
 
 Vue.use(scroll);
 Vue.use(ElementUI);
@@ -72,11 +73,13 @@ router.beforeEach((to, from, next) => {
   NProgress.start();
   if (
     to.fullPath === "/login/index" ||
-    to.fullPath === "/index/home" ||
-    to.fullPath === "/examine"
+    to.fullPath === "/examine" ||
+    to.fullPath === "/login/forget"
   ) {
     next();
     NProgress.done();
+  } else if (to.fullPath === "/index/home") {
+    routerDeal(to, from, next);
   } else {
     if (to.matched.some(m => m.meta.require)) {
       if (getToken()) {
@@ -85,8 +88,8 @@ router.beforeEach((to, from, next) => {
             Message({
               type: "warning",
               message: "长时间未操作，登录信息已失效！",
-              center: true,
-              duration: 2000
+              center: true
+              //duration: 2000
             });
             removeToken();
             location.reload();
@@ -97,8 +100,8 @@ router.beforeEach((to, from, next) => {
         Message({
           type: "error",
           message: "需要登录之后才能继续操作！",
-          center: true,
-          duration: 2000
+          center: true
+          //duration: 2000
         });
         next({ path: "/login", query: { redirect: to.fullPath } });
         NProgress.done();

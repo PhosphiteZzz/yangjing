@@ -1,5 +1,5 @@
 <template>
-  <div style="padding-top: 20px">
+  <div style="padding-top: 20px" id="start">
     <div class="home main-width">
       <!-- 幻灯/行业新闻/登录 -->
       <section class="home-news clearfix">
@@ -25,7 +25,7 @@
               <router-link :to="{ path: '/index/news' }">MORE+</router-link>
             </div>
           </div>
-          <div class="news-box-cont">
+          <div class="news-box-cont" v-if="newsList.length > 0">
             <div
               class="news-box-cont-item"
               v-for="(item, index) in newsList"
@@ -41,6 +41,7 @@
               ></div>
             </div>
           </div>
+          <div v-else class="nodataAvailableA"></div>
         </div>
         <div class="login-box">
           <div class="title-item">
@@ -62,11 +63,11 @@
               <span class="text" title="监管人">监管人</span>
               <span class="arrow"></span>
             </div>
-            <div class="role-common" @click="expertLogin">
+            <!-- <div class="role-common" @click="expertLogin">
               <span class="icon zjdl"></span>
               <span class="text" title="专家登录">专家登录</span>
               <span class="arrow"></span>
-            </div>
+            </div> -->
           </div>
         </div>
       </section>
@@ -99,47 +100,57 @@
             </div>
           </div>
           <div class="pur-notice-list" v-if="noticeIndex === 0">
-            <div
-              class="common-item"
-              v-for="(item, index) in annonList"
-              @click="enterNoExplantion(item.id, noticeIndex)"
-              :key="index"
-            >
-              <div class="icon"></div>
+            <div v-if="annonList.length > 0">
               <div
-                :class="['status', handleStatus(item.process)]"
-                v-text="item.processName"
-              ></div>
-              <div
-                :class="[`type_${item.project.bidWay}`]"
-                v-text="`[${item.project.bidWayName}]`"
-              ></div>
-              <div class="title" v-text="item.title" :title="item.title"></div>
-              <div
-                class="time"
-                v-text="timeFormatter(item.createTime)"
-                :title="item.createTime"
-              ></div>
+                class="common-item"
+                v-for="(item, index) in annonList"
+                @click="enterNoExplantion(item.id, noticeIndex)"
+                :key="index"
+              >
+                <div class="icon"></div>
+                <div
+                  :class="['status', handleStatus(item.process)]"
+                  v-text="item.processName"
+                ></div>
+                <div
+                  :class="[`type_${item.project.bidWay}`]"
+                  v-text="`[${item.project.bidWayName}]`"
+                ></div>
+                <div
+                  class="title"
+                  v-text="item.title"
+                  :title="item.title"
+                ></div>
+                <div
+                  class="time"
+                  v-text="timeFormatter(item.createTime)"
+                  :title="item.createTime"
+                ></div>
+              </div>
             </div>
+            <div v-else class="nodataAvailableB"></div>
           </div>
           <div class="question-notice-list" v-else>
-            <div
-              class="common-item"
-              v-for="(item, index) in explanList"
-              @click="enterNoExplantion(item.id, noticeIndex)"
-              :key="index"
-            >
+            <div v-if="explanList.length > 0">
               <div
-                class="title"
-                v-text="item.proName"
-                :title="item.title"
-              ></div>
-              <div
-                class="time"
-                v-text="timeTransFor(item.createTime)"
-                :title="item.createTime"
-              ></div>
+                class="common-item"
+                v-for="(item, index) in explanList"
+                @click="enterNoExplantion(item.id, noticeIndex)"
+                :key="index"
+              >
+                <div
+                  class="title"
+                  v-text="item.proName"
+                  :title="item.title"
+                ></div>
+                <div
+                  class="time"
+                  v-text="timeTransFor(item.createTime)"
+                  :title="item.createTime"
+                ></div>
+              </div>
             </div>
+            <div v-else class="nodataAvailableB"></div>
           </div>
         </div>
         <!-- 成交结果公示 -->
@@ -157,7 +168,7 @@
               </div>
             </div>
           </div>
-          <div class="result-notice-list">
+          <div class="result-notice-list" v-if="tenderList.length > 0">
             <div
               class="common-item"
               v-for="(item, index) in tenderList"
@@ -172,6 +183,7 @@
               ></div>
             </div>
           </div>
+          <div v-else class="nodataAvailableA"></div>
         </div>
       </section>
       <!-- 公众号 -->
@@ -185,7 +197,7 @@
       </div>
     </div>
     <!-- 主体信息/诚信（信用）信息  -->
-    <section class="home-info">
+    <!-- <section class="home-info">
       <div class="main-width">
         <div class="info-notice">
           <div class="common-box">
@@ -235,21 +247,6 @@
                 >
               </div>
             </div>
-            <!-- <div class="common-tap">
-              <div class="tap-box">
-                <div
-                  class="tap tapActive"
-                  @click="refreshCredit()"
-                >
-                  信用信息
-                </div>
-              </div>
-              <div class="common-title-more">
-                <router-link :to="{ path: '/index/creditinfo/info' }"
-                  >MORE+</router-link
-                >
-              </div>
-            </div> -->
           </div>
           <div class="credit-notice-list">
             <div
@@ -268,7 +265,7 @@
           </div>
         </div>
       </div>
-    </section>
+    </section> -->
     <!-- 今日交易 -->
     <section class="home-today main-width">
       <div class="common-box">
@@ -328,7 +325,7 @@
         <div class="table-box">
           <div class="all-amount">
             <div class="all-amount-text">
-              本{{ dateIdxList[dateIdx] }}全市交易总数(宗)
+              本{{ dateIdxList[dateIdx] }}交易总数(宗)
             </div>
             <div class="all-amount-cont">
               <span
@@ -409,6 +406,10 @@ export default {
         pageNum: 1,
         pageSize: 5
       },
+      pageMore: {
+        pageNum: 1,
+        pageSize: 8
+      },
       location: location,
       //显示公众号
       showCode: true,
@@ -450,6 +451,9 @@ export default {
     });
     this.init();
   },
+  mounted() {
+    document.querySelector("#start").scrollIntoView(true);
+  },
   methods: {
     /** 初始化页面数据 */
     init() {
@@ -459,16 +463,16 @@ export default {
         this.tradeOptions = result.data.trade_type;
       });
       //采购公告
-      getNoticeList(this.page).then(result => {
+      getNoticeList(this.pageMore).then(result => {
         this.annonList = result.rows;
       });
       //主体信息
-      getMainInfo({
-        pageNum: 1,
-        pageSize: 4
-      }).then(result => {
-        this.mainList = result.rows;
-      });
+      // getMainInfo({
+      //   pageNum: 1,
+      //   pageSize: 4
+      // }).then(result => {
+      //   this.mainList = result.rows;
+      // });
       // 轮播图
       getBannerList().then(result => {
         this.bannerList = result.data;
@@ -482,11 +486,11 @@ export default {
         this.noticeList = result.rows;
       });
       //成交结果公示
-      getHitlist(this.page).then(result => {
+      getHitlist(this.pageMore).then(result => {
         this.tenderList = result.rows;
       });
       //澄清答疑
-      getExplanation(this.page).then(result => {
+      getExplanation(this.pageMore).then(result => {
         this.explanList = result.rows;
       });
       //公示/公告数据
@@ -499,9 +503,9 @@ export default {
         };
       });
       //信用信息
-      getMoreInfo("credit", this.page).then(result => {
-        this.creditList = result.rows;
-      });
+      // getMoreInfo("credit", this.page).then(result => {
+      //   this.creditList = result.rows;
+      // });
       getProjectNum("month").then(result => {
         this.refreshCharts(result);
       });
@@ -521,13 +525,13 @@ export default {
       this.noticeIndex = type;
       if (type === 0) {
         //采购公告
-        getNoticeList(this.page).then(result => {
+        getNoticeList(this.pageMore).then(result => {
           this.annonList = result.rows;
         });
         return;
       }
       //澄清答疑
-      getExplanation(this.page).then(result => {
+      getExplanation(this.pageMore).then(result => {
         this.explanList = result.rows;
       });
     },
@@ -618,7 +622,7 @@ export default {
       if (getToken()) {
         this.$message({
           type: "warning",
-          duration: 2000,
+          //duration: 2000,
           message: "用户已登录！",
           center: true
         });
@@ -804,11 +808,15 @@ export default {
     .role-item {
       padding: 18px 0 17px 0;
       height: calc(~"100% - 33px");
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
       .role-common {
         height: 40px;
         border: 1px solid @theme;
         border-radius: 4px;
-        margin-bottom: 14px;
+        // margin: 20px 0;
+        // margin-bottom: 14px;
         display: flex;
         position: relative;
         span {
@@ -820,18 +828,6 @@ export default {
           letter-spacing: 5px;
         }
         cursor: pointer;
-        &:nth-last-of-type(1) {
-          margin: 0;
-          border: 1px solid @blue;
-          .text {
-            letter-spacing: 0;
-            color: @blue;
-          }
-          .arrow {
-            background: url("~@/assets/icon/yj_icon_gd2.png") center center
-              no-repeat;
-          }
-        }
         .icon {
           height: 100%;
           width: 67px;
@@ -872,7 +868,7 @@ export default {
 }
 .home-notice {
   margin-top: 27px;
-  height: 256px;
+  height: 390px;
   display: flex;
   > div {
     height: 100%;
@@ -881,6 +877,7 @@ export default {
     flex: 1;
     margin-right: 29px;
     &-list {
+      height: calc(~"100% - 30px");
       .common-item {
         .title {
           text-indent: 5px;
@@ -903,6 +900,7 @@ export default {
     width: 586px;
     margin-right: 29px;
     &-list {
+      height: calc(~"100% - 30px");
       .common-item {
         .title {
           max-width: 437px;

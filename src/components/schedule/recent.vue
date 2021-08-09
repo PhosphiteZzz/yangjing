@@ -20,8 +20,13 @@
             <p>开标地点</p>
           </div>
           <div class="item" v-for="(item, index) in currentList" :key="index">
-            <p v-text="item.sendEndTime"></p>
-            <p v-text="item.proName" :title="item.proName"></p>
+            <p v-text="item.openTime"></p>
+            <p
+              class="routeLink"
+              @click="handleRoute(item.noticeId)"
+              v-text="item.proName"
+              :title="item.proName"
+            ></p>
             <p
               v-text="typeFormat(item.tradeType)"
               :title="typeFormat(item.tradeType)"
@@ -90,6 +95,17 @@ export default {
     handleCurrentChange(page) {
       this.page.pageNum = page;
       this.handleAction();
+    },
+    /** 跳转 */
+    handleRoute(noticeId) {
+      this.$router.push({
+        path: "/index/transdetails",
+        query: {
+          id: noticeId,
+          fLeave: "交易信息",
+          index: 0
+        }
+      });
     }
   },
   created() {
@@ -135,7 +151,10 @@ export default {
     overflow-y: auto;
     .table {
       border: 1px solid @border-less;
-
+      .routeLink {
+        text-decoration: underline;
+        cursor: pointer;
+      }
       .header,
       .item {
         display: flex;
